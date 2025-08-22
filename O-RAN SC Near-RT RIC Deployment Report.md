@@ -13,12 +13,10 @@ This document tracks my journey of setting up the O-RAN SC RIC platform and prep
   - `kind` cluster creation successful.
 - Did **not** enable Kubernetes inside Docker Desktop (since `kind` manages its own cluster).
 
-✅ **What worked:**  
+ **What worked:**  
 - `kind create cluster --name ric` successfully created a local cluster.  
 - Docker engine and WSL2 integration functioning properly.  
 
-❌ **What didn’t work initially:**  
-- Tried running `kind` before Docker was installed → failed with *"docker not found"*. Fixed after installing Docker.
 
 ---
 
@@ -33,10 +31,13 @@ This document tracks my journey of setting up the O-RAN SC RIC platform and prep
 - Basic RIC components (E2 Manager, Subscription Manager, A1 Mediator, etc.) came up.
 
 **Command Executed**
+
 ```
  $ kubectl get pods -n ricplt 
 ```
+
 **Response**
+
 ```
 NAME                                                         READY   STATUS    RESTARTS       AGE
 deployment-ricplt-a1mediator-67f8bcb5f7-gtnwt                1/1     Running   0              15h
@@ -51,14 +52,17 @@ deployment-ricplt-vespamgr-846d876485-5r7tr                  1/1     Running   0
 r4-infrastructure-kong-6874569c56-sm2qt                      2/2     Running   0              15h
 r4-infrastructure-prometheus-alertmanager-59c9f4bf85-xzr8l   2/2     Running   0              15h
 r4-infrastructure-prometheus-server-8df8c44b-5fl58           1/1     Running   0              15h
-statefulset-ricplt-dbaas-server-0                            1/1     Running   0              15h
+statefulset-ricplt-dbaas-server-0                            1/1     Running   0              15ha
 ```
 
 **Command Executed**
+
 ```
 $ kubectl get svc -n ricplt
 ```
+
 **Response**
+
 ```
 NAME                                        TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                         AGE
 aux-entry                                   ClusterIP      10.96.81.144    <none>        80/TCP,443/TCP                  15h
@@ -105,8 +109,8 @@ The next steps will involve:
 **Command Executed**
 ```bash
 xapp_onboarder onboard --config_file_path=CONFIG_FILE_PATH --shcema_file_path=SCHEMA_FILE_PATH
-
 ```
+The above command was executed with correct file paths*
 ```
 ler.artifacts_manager
 2025-08-20 22:52:24,913 - INFO - >>>>> Starting development xapp_onboarder at http://None/api/v1/ <<<<< - xapp_onboarder.server.server
@@ -140,16 +144,61 @@ ler.artifacts_manager
 - Cross-checked official O-RAN SC documentation — found that the onboard command is supposed to only perform onboarding, but in this case it instead started the Flask app.
 - This led to the conclusion that the onboarding script was misconfigured (running in server mode instead of completing the onboarding task), which is the root cause of the indefinite execution.
 
+### API CALL
+**Request**
+```
+curl http://localhost:8888/api/v1/health
+```
+**Response**
+```
+{
+    "error_source": "xapp_onboarder",
+    "error_message": "Cannot connect to local helm repo.",
+    "status": "Service not ready."
+}
+```
+**Inference**
+- The server is fine - the missing piece is the Helm chart repo where xApp lives.
 
-## 4. Notes for Improvement
 
-- Document exact versions of all dependencies.  
-- Capture logs from failed attempts.  
-- Add architecture diagram of RIC + xApp once deployment works fully.  
+## xApp Docker Image
 
----
+I built and pushed the **KPM Basic xApp** Docker image.
 
-## 5. References
+- **Dockerfile** was used to containerize the xApp.
+- The image was tagged and pushed to Docker Hub:
+
+**Request**
+  ```
+  docker build -t <your-dockerhub-username>/kpm-basic-xapp:latest .
+  docker push <your-dockerhub-username>/kpm-basic-xapp:latest
+  ```
+  **Response**
+  ```
+  The push refers to repository [docker.io/sved2805/kpm-basic-xapp]
+b3ba8a31ba0b: Pushed
+319bfd7bf52a: Pushed
+4f4fb700ef54: Mounted from library/redis
+302e3ee49805: Pushed
+0e97c2bd1ea6: Pushed
+ead58722cdcc: Pushed
+030d7bdc20a6: Pushed
+2c9c9f443f20: Pushed
+b388af958c29: Pushed
+d04201fc61e0: Pushed
+a3f1dfe736c5: Pushed
+3971691a3637: Pushed
+019053a11dd8: Pushed
+97fffc93c500: Pushed
+0c5280fa8c66: Pushed
+93767d5eb4e8: Pushed
+e0fee55bfaa1: Pushed
+cdcf3f638a13: Pushed
+0.1.0: digest: sha256:302e1971954612b629e0689091f928e3f0d3ee74e595c935c3065bb5492cd768 size: 856  
+```
+
+
+## 4. References
 
 - [O-RAN SC RIC Deployment Repo](https://github.com/o-ran-sc/ric-plt-ric-dep)  
 - [O-RAN SC xApp Framework](https://github.com/o-ran-sc/ric-plt-xapp-frame)  
