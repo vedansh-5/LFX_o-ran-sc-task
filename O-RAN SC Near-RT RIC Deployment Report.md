@@ -132,6 +132,7 @@ ler.artifacts_manager
 - The command did not terminate and instead started serving a Flask app indefinitely on 127.0.0.1:8090.
 - Expected behavior was for the onboarding process to complete and exit, not to run as a server.
 
+### API CALL
 **Troubleshooting Steps**
 - Verified that the xapp_onboarder tool was running by checking health endpoint:
     ```
@@ -144,7 +145,9 @@ ler.artifacts_manager
 - Cross-checked official O-RAN SC documentation — found that the onboard command is supposed to only perform onboarding, but in this case it instead started the Flask app.
 - This led to the conclusion that the onboarding script was misconfigured (running in server mode instead of completing the onboarding task), which is the root cause of the indefinite execution.
 
-### API CALL
+
+Ran it again and it did some beep-beep-boop-boop.
+
 **Request**
 ```
 curl http://localhost:8888/api/v1/health
@@ -160,6 +163,7 @@ curl http://localhost:8888/api/v1/health
 **Inference**
 - The server is fine - the missing piece is the Helm chart repo where xApp lives.
 
+Installed helm charts again.
 
 ## xApp Docker Image
 
@@ -197,8 +201,25 @@ cdcf3f638a13: Pushed
 0.1.0: digest: sha256:302e1971954612b629e0689091f928e3f0d3ee74e595c935c3065bb5492cd768 size: 856  
 ```
 
+## 4. Deploying E2 Sim
+- Cloned the Repo.
+- Installed dependencies
+  ```
+  sudo apt-get install -y build-essential git cmake libsctp-dev lksctp-tools autoconf automake libtool bison flex libboost-all-dev
+  sudo apt-get clean
 
-## 4. References
+  ```
+
+- Built the official e2sim
+  ```
+  cd ~/e2-interface/e2sim/
+  mkdir build
+  cd build
+  cmake ..
+  make package
+  ```
+
+## 5. References
 
 - [O-RAN SC RIC Deployment Repo](https://github.com/o-ran-sc/ric-plt-ric-dep)  
 - [O-RAN SC xApp Framework](https://github.com/o-ran-sc/ric-plt-xapp-frame)  
