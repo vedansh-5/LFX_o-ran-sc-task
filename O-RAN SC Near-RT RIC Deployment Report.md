@@ -1,4 +1,4 @@
-# O-RAN SC RIC Deployment & xApp Exploration
+# O-RAN SC RIC Deployment & xApp Exploration & E2 Sim Deployment
 
 This document tracks my journey of setting up the O-RAN SC RIC platform and preparing for xApp development/testing. It includes the steps I’ve taken, what worked, and what didn’t.
 
@@ -219,10 +219,11 @@ cdcf3f638a13: Pushed
   make package
   ```
 Note: Since the xApp is not yet deployed, E2Sim cannot meaningfully stream data to it.
+
+
 ## 5. References
 
 - [O-RAN SC RIC Deployment Repo](https://github.com/o-ran-sc/ric-plt-ric-dep)  
 - [O-RAN SC xApp Framework](https://github.com/o-ran-sc/ric-plt-xapp-frame)  
 - [Kind Documentation](https://kind.sigs.k8s.io/)  
-
 ---
