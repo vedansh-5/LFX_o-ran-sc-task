@@ -218,7 +218,7 @@ cdcf3f638a13: Pushed
   cmake ..
   make package
   ```
-
+Note: Since the xApp is not yet deployed, E2Sim cannot meaningfully stream data to it.
 ## 5. References
 
 - [O-RAN SC RIC Deployment Repo](https://github.com/o-ran-sc/ric-plt-ric-dep)  
